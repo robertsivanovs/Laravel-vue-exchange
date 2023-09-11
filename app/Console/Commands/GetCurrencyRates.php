@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -23,14 +25,6 @@ class GetCurrencyRates extends Command
      */
     protected $description = 'Gets the latest currency rates from anyapi.io';
 
-    
-    /**
-     * Api endpoint for anyapi.io service
-     *
-     * @var string
-     */
-    protected $api_endpoint = 'https://anyapi.io/api/v1/exchange/rates';
-    
     /**
      * Currencies used in the app and saved in the DB.
      * Populate this list if you'd like to add any other currency.
@@ -59,55 +53,61 @@ class GetCurrencyRates extends Command
      *
      * @return int
      */
-    public function handle()
-    {
+    public function handle(): int {
 
         if ($this->isRatesUpdated()) {
-            return $this->info("Rates are up to date. Nothing to update!"); 
+            $this->info("Rates are up to date. Nothing to update!");
+            return 0;
         }
 
-        $response = Http::get($this->api_endpoint, [
-            'apiKey' => Config('constants.anyapi.API_KEY'),
-            'base' => Config('constants.anyapi.BASE_CURRENCY')
+        // Execute request to anyapi.io to fetch currency data
+        $response = Http::get(Config('currency.anyapi.api_endpoint'), [
+            'apiKey' => Config('currency.anyapi.api_key'),
+            'base' => Config('currency.anyapi.base_currency')
         ]);
 
         // If data was fetched successfully save the rate data to DB
         if ($response->successful()) {
             $data = json_decode($response->body());
             $this->saveData($data);
-            return $this->info($response->body());
+            $this->info('API Data fetched successfully');
+            $this->info($response->body());
+            return 1;
         } else {
-            // Log errors / issues to a log file
+            $this->error('Bad or invalid API response.');
+            return 0;
         }
-
-        return false;
     }
-    
+            
     /**
      * saveData
      * 
-     * Save exchange rates in DB
+     * Save rate data to DB
      *
      * @param  mixed $data
      * @return void
      */
-    protected function saveData($data = null) {
-
+    protected function saveData(?object $data): void {
+        
         if (!$data) {
-            return false;
+            return;
         }
-
-        // Iterate trough the used currencies array and save data to DB
+    
         foreach ($this->currencies_to_use as $currency) {
-            if (property_exists($data->rates, $currency)){
-                $rates = new Rate();
-                $rates->base_currency = $data->base;
-                $rates->quote_currency = $currency;
-                $rates->exchange_rate = $data->rates->$currency;
-                $rates->save();
+            if (property_exists($data->rates, $currency)) {
+                try {
+                    Rate::create([
+                        'base_currency' => $data->base,
+                        'quote_currency' => $currency,
+                        'exchange_rate' => $data->rates->$currency,
+                    ]);
+                } catch (\Exception $e) {
+                    // Handle database error, log it, or throw a custom exception.
+                    $this->error('Failed to save currency rates.');
+                    $this->error($e->getMessage());
+                }
             }
         }
-        
     }
     
     /**
@@ -115,26 +115,29 @@ class GetCurrencyRates extends Command
      * 
      * Check if 24 hours have passed since the last update
      *
-     * @return void
+     * @return bool
      */
-    protected function isRatesUpdated() {
+    protected function isRatesUpdated(): bool {
 
         $updated = false;
 
+        // Check if an entry exists in Rates DB table
+        if (!is_object(Rate::latest('id')->first())) {
+            // If no entries found skip time checks & populate data
+            return $updated;
+        }
+        
+        // Check if the needed property exists for the DB entry
+        if (!isset(Rate::latest('id')->first()->created_at)) {
+            return $updated;
+        }
+        
         // Get date & time 24 hours ago
-        $yesterday = Carbon::now();
-        $yesterday->subHours(24);
-        $yesterday->toDateTimeString();
-
-        // Get latest rate update
-        $rates = new Rate();
+        $yesterday = Carbon::now()->subHours(24);
         $latest_update_date = Rate::latest('id')->first()->created_at;
 
         // Compare if 24 hours have passed since the latest update
-        if (!$latest_update_date->lt($yesterday)) {
-            $updated = true;
-        }
+        return !$latest_update_date->lt($yesterday);
 
-        return $updated;
     }
 }
