@@ -1,8 +1,6 @@
-{{ var_dump($currency_rates) }}
+<div id="app">
+  <example-component currency-rates = "{{ $currency_rates }}" />
+</div>
 
-===========================
-{{ $currency_rates->base }}
-{{ $currency_rates->lastUpdate }}
-{{ $currency_rates->rates->GBP }}
-{{ $currency_rates->rates->USD }}
-{{ $currency_rates->rates->AUD }}
+<script src="{{ mix('/js/app.js') }}"></script>
+

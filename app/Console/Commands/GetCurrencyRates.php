@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Carbon;
 use App\Models\Rate;
 
+/**
+ * GetCurrencyRates
+ * 
+ * Fetches currency data from anyapi.io
+ * Saves data in DB
+ * Performs a date check to update only once every 24 hrs
+ * 
+ * Run "php artisan get-currency-rates" from project root to execute
+ * 
+ */
 class GetCurrencyRates extends Command
 {
     /**
