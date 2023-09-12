@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Rate;
+use Illuminate\Support\Collection;
 
 class IndexController extends Controller
 {
+
+    public $currencies = [
+        'USD', 
+        'GBP', 
+        'AUD'
+    ];
     
     /**
      * index
@@ -18,24 +25,25 @@ class IndexController extends Controller
      */
     public function index() {
 
-        $currency_rates = $this->getCurrencyRates();
-        return view('index')->with('currency_rates', $currency_rates);
+        $new_rates = $this->getCurrencyRates();
+        return view('index')->with('new_rates', $new_rates);
     }
 
     public function getCurrencyRates() {
 
-        $currency_rates = Rate::where('quote_currency', 'USD')
-            ->orderBy('created_at', 'desc')
+        $currency_rates = Rate::whereIn('quote_currency', $this->currencies)
+            ->orderBy('created_at', 'asc')
             ->get();
 
-    //         $currencies = ['USD', 'GBP', 'AUD'];
+        $new_rates = [];
 
-    // $currencyRates = Rate::whereIn('quote_currency', $currencies)
-    //     ->orderBy('created_at', 'desc')
-    //     ->get();
+        foreach ($currency_rates as $currency) {
+            $new_rates[$currency->quote_currency]['exchange_rates'][$currency->created_at->format('Y-m-d')] = $currency->exchange_rate;
+            // Since we are ordering by the latest, push only the latest update date
+            $new_rates[$currency->quote_currency]['last_updated'] = $currency->created_at->format('Y-m-d');
+        }
 
-
-        return $currency_rates;
+        return $new_rates;
 
     }
 }
