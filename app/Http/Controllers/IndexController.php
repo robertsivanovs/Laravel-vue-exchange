@@ -40,7 +40,7 @@ class IndexController extends Controller
 
             $quoteCurrency = $currency->quote_currency;
             $exchangeRate = $currency->exchange_rate;
-            $date = $currency->created_at->format('Y-m-d');
+            $date = $currency->created_at->format('d.m.Y');
         
             // Check if the quote_currency entry already exists in $new_rates
             if (!isset($new_rates[$quoteCurrency])) {
@@ -51,7 +51,8 @@ class IndexController extends Controller
                     'lowest_rate' => $exchangeRate,
                     'highest_rate' => $exchangeRate,
                     'average_rate' => $exchangeRate, 
-                    'rate_count' => 1
+                    'rate_count' => 1,
+                    'quote_currency' => $quoteCurrency
                 ];
             } else {
                 // If it already exists, update the exchange rate and last_updated date

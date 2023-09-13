@@ -5081,7 +5081,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       selectedCurrency: null,
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 1,
       // Change this to the desired number of items per page
       sortByAscending: true
     };
@@ -5138,9 +5138,11 @@ var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
-    staticClass: "card-body"
-  }, [_c("div", [_c("span", {
-    staticClass: "label"
+    staticClass: "currency-exchange-widget"
+  }, [_c("div", {
+    staticClass: "exchange-widget-container"
+  }, [_c("span", {
+    staticClass: "widget-label heading"
   }, [_vm._v("1 EUR to")]), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
@@ -5148,6 +5150,7 @@ var render = function render() {
       value: _vm.selectedCurrency,
       expression: "selectedCurrency"
     }],
+    staticClass: "currency-select",
     attrs: {
       id: "currencySelect"
     },
@@ -5174,51 +5177,65 @@ var render = function render() {
       }
     }, [_vm._v(_vm._s(key))]);
   })], 2), _vm._v(" "), _c("span", {
-    staticClass: "label"
-  }, [_vm._v("Exchange Rate")]), _vm._v(" "), _vm.selectedCurrency ? _c("div", [_c("span", {
-    staticClass: "label"
-  }, [_vm._v("Last updated: " + _vm._s(_vm.selectedCurrency.last_updated))]), _vm._v(" "), _c("br"), _c("br"), _vm._v(" "), _c("button", {
+    staticClass: "widget-label heading"
+  }, [_vm._v("Exchange Rate")]), _vm._v(" "), _vm.selectedCurrency ? _c("div", {
+    staticClass: "currency-details"
+  }, [_c("p", {
+    staticClass: "widget-label"
+  }, [_vm._v("Last updated: " + _vm._s(_vm.selectedCurrency.last_updated))]), _vm._v(" "), _c("span", {
+    staticClass: "pagination-button",
     attrs: {
       disabled: _vm.currentPage === 1
     },
     on: {
       click: _vm.previousPage
     }
-  }, [_vm._v("Previous")]), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.currentPage))]), _vm._v(" "), _c("button", {
+  }, [_vm._v("<")]), _vm._v(" "), _c("span", {
+    staticClass: "current-page"
+  }, [_vm._v(_vm._s(_vm.currentPage))]), _vm._v(" "), _c("span", {
+    staticClass: "pagination-button",
     attrs: {
       disabled: _vm.currentPage === _vm.totalPages
     },
     on: {
       click: _vm.nextPage
     }
-  }, [_vm._v("Next")]), _vm._v(" "), _c("table", [_c("tr", [_c("th", {
+  }, [_vm._v(">")]), _vm._v(" "), _c("table", {
+    staticClass: "exchange-rate-table"
+  }, [_c("tr", [_c("th", {
     staticClass: "sort",
     on: {
       click: _vm.sortByDate
     }
-  }, [_vm._v("Date ^")]), _vm._v(" "), _c("th", [_vm._v("EUR TO ")])]), _vm._v(" "), _vm._l(_vm.paginatedRates, function (rate) {
+  }, [_vm._v("Date ^")]), _vm._v(" "), _c("th", [_vm._v("EUR to " + _vm._s(_vm.selectedCurrency.quote_currency))])]), _vm._v(" "), _vm._l(_vm.paginatedRates, function (rate) {
     return _c("tr", [_c("td", [_vm._v(_vm._s(rate[0]) + " ")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(rate[1]) + " ")])]);
-  })], 2), _vm._v(" "), _c("button", {
+  })], 2), _vm._v(" "), _c("span", {
+    staticClass: "pagination-button",
     attrs: {
       disabled: _vm.currentPage === 1
     },
     on: {
       click: _vm.previousPage
     }
-  }, [_vm._v("Previous")]), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.currentPage))]), _vm._v(" "), _c("button", {
+  }, [_vm._v("<")]), _vm._v(" "), _c("span", {
+    staticClass: "current-page"
+  }, [_vm._v(_vm._s(_vm.currentPage))]), _vm._v(" "), _c("span", {
+    staticClass: "pagination-button",
     attrs: {
       disabled: _vm.currentPage === _vm.totalPages
     },
     on: {
       click: _vm.nextPage
     }
-  }, [_vm._v("Next")]), _vm._v(" "), _c("br"), _c("br"), _vm._v(" "), _c("span", {
-    staticClass: "label"
-  }, [_vm._v("Minimum: " + _vm._s(_vm.selectedCurrency.lowest_rate))]), _vm._v(" "), _c("br"), _c("br"), _vm._v(" "), _c("span", {
-    staticClass: "label"
-  }, [_vm._v("Maximum: " + _vm._s(_vm.selectedCurrency.highest_rate))]), _vm._v(" "), _c("br"), _c("br"), _vm._v(" "), _c("span", {
-    staticClass: "label"
-  }, [_vm._v("Average: " + _vm._s(_vm.selectedCurrency.average_rate))])]) : _vm._e()])]);
+  }, [_vm._v(">")]), _vm._v(" "), _c("p", {
+    staticClass: "min-max-avg-labels"
+  }, [_c("span", {
+    staticClass: "widget-label"
+  }, [_vm._v("Minimum: " + _vm._s(_vm.selectedCurrency.lowest_rate) + " " + _vm._s(_vm.selectedCurrency.quote_currency) + ",")]), _vm._v(" "), _c("span", {
+    staticClass: "widget-label"
+  }, [_vm._v("Maximum: " + _vm._s(_vm.selectedCurrency.highest_rate) + " " + _vm._s(_vm.selectedCurrency.quote_currency))])]), _vm._v(" "), _c("span", {
+    staticClass: "widget-label"
+  }, [_vm._v("Average: " + _vm._s(_vm.selectedCurrency.average_rate) + " " + _vm._s(_vm.selectedCurrency.quote_currency))])]) : _vm._e()])]);
 };
 var staticRenderFns = [];
 render._withStripped = true;

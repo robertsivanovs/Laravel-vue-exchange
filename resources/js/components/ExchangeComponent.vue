@@ -1,47 +1,44 @@
 <template>
-    <div class="card-body">
-      <div>
-        <span class="label">1 EUR to</span>
-        <select id="currencySelect" v-model="selectedCurrency">
-          <option value="">Select a currency</option>
-          <option v-for="(value, key) in newRates" :key="key" :value="value">{{ key }}</option>
-        </select>
-        <span class="label">Exchange Rate</span>
+  <div class="currency-exchange-widget">
+    <div class="exchange-widget-container">
+      <span class="widget-label heading">1 EUR to</span>
+      <select id="currencySelect" v-model="selectedCurrency" class="currency-select">
+        <option value="">Select a currency</option>
+        <option v-for="(value, key) in newRates" :key="key" :value="value">{{ key }}</option>
+      </select>
+      <span class="widget-label heading">Exchange Rate</span>
 
-        <div v-if="selectedCurrency">
-          <span class="label">Last updated: {{ selectedCurrency.last_updated }}</span>
-          <br><br>
-          <!-- Pagination controls -->
-          <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
-          <span>{{ currentPage }}</span>
-          <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
-          
-          <table>
-            <tr>
-              <th class="sort" @click="sortByDate">Date ^</th>
-              <th>EUR TO </th>
-            </tr>
-            <tr v-for="(rate) in paginatedRates">
-                <td>{{ rate[0] }} </td>  
-                <td>{{ rate[1] }} </td>
-            </tr>
-          </table> 
-          <!-- Pagination controls -->
-          <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
-          <span>{{ currentPage }}</span>
-          <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+      <div v-if="selectedCurrency" class="currency-details">
+        <p class="widget-label">Last updated: {{ selectedCurrency.last_updated }}</p>
 
-          <br><br>
-          <span class="label">Minimum: {{ selectedCurrency.lowest_rate }}</span>
-          <br><br>
-          <span class="label">Maximum: {{ selectedCurrency.highest_rate }}</span>
-          <br><br>
-          <span class="label">Average: {{ selectedCurrency.average_rate }}</span>
+        <!-- Pagination controls -->
+        <span class="pagination-button" @click="previousPage" :disabled="currentPage === 1">&lt;</span>
+        <span class="current-page">{{ currentPage }}</span>
+        <span class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">&gt;</span>
 
-        </div>
+        <table class="exchange-rate-table">
+          <tr>
+            <th class="sort" @click="sortByDate">Date ^</th>
+            <th>EUR to {{ selectedCurrency.quote_currency }}</th>
+          </tr>
+          <tr v-for="(rate) in paginatedRates">
+            <td>{{ rate[0] }} </td>  
+            <td>{{ rate[1] }} </td>
+          </tr>
+        </table> 
+        <!-- Pagination controls -->
+        <span class="pagination-button" @click="previousPage" :disabled="currentPage === 1">&lt;</span>
+        <span class="current-page">{{ currentPage }}</span>
+        <span class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">&gt;</span>
+
+        <p class="min-max-avg-labels"><span class="widget-label">Minimum: {{ selectedCurrency.lowest_rate }} {{ selectedCurrency.quote_currency }},</span>
+          <span class="widget-label">Maximum: {{ selectedCurrency.highest_rate }} {{ selectedCurrency.quote_currency }}</span>
+        </p>
+        <span class="widget-label">Average: {{ selectedCurrency.average_rate }} {{ selectedCurrency.quote_currency }}</span>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
   export default {
@@ -50,7 +47,7 @@
       return {
         selectedCurrency: null,
         currentPage: 1,
-        itemsPerPage: 5, // Change this to the desired number of items per page
+        itemsPerPage: 1, // Change this to the desired number of items per page
         sortByAscending: true
       };
     },
@@ -88,7 +85,7 @@
       sortByDate() {
         this.sortByAscending = !this.sortByAscending;
       }
-    },
+    }
   };
   </script>
   

@@ -1,0 +1,35 @@
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 15px 20px;
+  }
+  
+  th {
+    background-color: #b7d1eb;
+  }
+  
+  .currency-exchange-widget {
+    text-align: center;
+  }
+  
+  .exchange-rate-table {
+    width: 25%;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .widget-label.heading {
+    font-size: 26px;
+    font-weight: bold;
+  }
+  
+  .currency-details {
+    margin: 10px;
+  }
+
+  .sort:hover, 
+  .pagination-button {
+    cursor: pointer;
+  }
