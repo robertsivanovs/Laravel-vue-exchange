@@ -5081,16 +5081,20 @@ __webpack_require__.r(__webpack_exports__);
     return {
       selectedCurrency: null,
       currentPage: 1,
-      itemsPerPage: 1 // Change this to the desired number of items per page
+      itemsPerPage: 5,
+      // Change this to the desired number of items per page
+      sortByAscending: true
     };
   },
-
   computed: {
     paginatedRates: function paginatedRates() {
       if (!this.selectedCurrency) return [];
       var rates = this.selectedCurrency.exchange_rates;
       var start = (this.currentPage - 1) * this.itemsPerPage;
       var end = start + this.itemsPerPage;
+      if (this.sortByAscending) {
+        return Object.entries(rates).slice(start, end).reverse();
+      }
       return Object.entries(rates).slice(start, end);
     },
     totalPages: function totalPages() {
@@ -5109,6 +5113,9 @@ __webpack_require__.r(__webpack_exports__);
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
       }
+    },
+    sortByDate: function sortByDate() {
+      this.sortByAscending = !this.sortByAscending;
     }
   }
 });
@@ -5170,9 +5177,7 @@ var render = function render() {
     staticClass: "label"
   }, [_vm._v("Exchange Rate")]), _vm._v(" "), _vm.selectedCurrency ? _c("div", [_c("span", {
     staticClass: "label"
-  }, [_vm._v("Last updated: " + _vm._s(_vm.selectedCurrency.last_updated))]), _vm._v(" "), _c("ul", _vm._l(_vm.paginatedRates, function (rate) {
-    return _c("li", [_vm._v("\n          " + _vm._s(rate[0]) + " " + _vm._s(rate[1]) + "\n        ")]);
-  }), 0), _vm._v(" "), _c("button", {
+  }, [_vm._v("Last updated: " + _vm._s(_vm.selectedCurrency.last_updated))]), _vm._v(" "), _c("br"), _c("br"), _vm._v(" "), _c("button", {
     attrs: {
       disabled: _vm.currentPage === 1
     },
@@ -5186,7 +5191,34 @@ var render = function render() {
     on: {
       click: _vm.nextPage
     }
-  }, [_vm._v("Next")])]) : _vm._e()])]);
+  }, [_vm._v("Next")]), _vm._v(" "), _c("table", [_c("tr", [_c("th", {
+    staticClass: "sort",
+    on: {
+      click: _vm.sortByDate
+    }
+  }, [_vm._v("Date ^")]), _vm._v(" "), _c("th", [_vm._v("EUR TO ")])]), _vm._v(" "), _vm._l(_vm.paginatedRates, function (rate) {
+    return _c("tr", [_c("td", [_vm._v(_vm._s(rate[0]) + " ")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(rate[1]) + " ")])]);
+  })], 2), _vm._v(" "), _c("button", {
+    attrs: {
+      disabled: _vm.currentPage === 1
+    },
+    on: {
+      click: _vm.previousPage
+    }
+  }, [_vm._v("Previous")]), _vm._v(" "), _c("span", [_vm._v(_vm._s(_vm.currentPage))]), _vm._v(" "), _c("button", {
+    attrs: {
+      disabled: _vm.currentPage === _vm.totalPages
+    },
+    on: {
+      click: _vm.nextPage
+    }
+  }, [_vm._v("Next")]), _vm._v(" "), _c("br"), _c("br"), _vm._v(" "), _c("span", {
+    staticClass: "label"
+  }, [_vm._v("Minimum: " + _vm._s(_vm.selectedCurrency.lowest_rate))]), _vm._v(" "), _c("br"), _c("br"), _vm._v(" "), _c("span", {
+    staticClass: "label"
+  }, [_vm._v("Maximum: " + _vm._s(_vm.selectedCurrency.highest_rate))]), _vm._v(" "), _c("br"), _c("br"), _vm._v(" "), _c("span", {
+    staticClass: "label"
+  }, [_vm._v("Average: " + _vm._s(_vm.selectedCurrency.average_rate))])]) : _vm._e()])]);
 };
 var staticRenderFns = [];
 render._withStripped = true;

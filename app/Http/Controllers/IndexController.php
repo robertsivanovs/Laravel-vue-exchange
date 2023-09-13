@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Rate;
-use Illuminate\Support\Collection;
 
 class IndexController extends Controller
 {
@@ -38,9 +37,44 @@ class IndexController extends Controller
         $new_rates = [];
 
         foreach ($currency_rates as $currency) {
-            $new_rates[$currency->quote_currency]['exchange_rates'][$currency->created_at->format('Y-m-d')] = $currency->exchange_rate;
-            // Since we are ordering by the latest, push only the latest update date
-            $new_rates[$currency->quote_currency]['last_updated'] = $currency->created_at->format('Y-m-d');
+
+            $quoteCurrency = $currency->quote_currency;
+            $exchangeRate = $currency->exchange_rate;
+            $date = $currency->created_at->format('Y-m-d');
+        
+            // Check if the quote_currency entry already exists in $new_rates
+            if (!isset($new_rates[$quoteCurrency])) {
+                // If not, initialize it with the first exchange rate found
+                $new_rates[$quoteCurrency] = [
+                    'exchange_rates' => [$date => $exchangeRate],
+                    'last_updated' => $date,
+                    'lowest_rate' => $exchangeRate,
+                    'highest_rate' => $exchangeRate,
+                    'average_rate' => $exchangeRate, 
+                    'rate_count' => 1
+                ];
+            } else {
+                // If it already exists, update the exchange rate and last_updated date
+                $new_rates[$quoteCurrency]['exchange_rates'][$date] = $exchangeRate;
+                $new_rates[$quoteCurrency]['last_updated'] = $date;
+        
+                // Update the lowest rate if the current rate is lower
+                if ($exchangeRate < $new_rates[$quoteCurrency]['lowest_rate']) {
+                    $new_rates[$quoteCurrency]['lowest_rate'] = $exchangeRate;
+                }
+
+                // Update the highest rate if the current rate is higher
+                if ($exchangeRate > $new_rates[$quoteCurrency]['highest_rate']) {
+                    $new_rates[$quoteCurrency]['highest_rate'] = $exchangeRate;
+                }
+
+                // Update the average rate and rate count
+                $new_rates[$quoteCurrency]['average_rate'] =
+                    ($new_rates[$quoteCurrency]['average_rate'] * $new_rates[$quoteCurrency]['rate_count'] + $exchangeRate) /
+                    ($new_rates[$quoteCurrency]['rate_count'] + 1);
+
+                $new_rates[$quoteCurrency]['rate_count']++;
+            }
         }
 
         return $new_rates;
