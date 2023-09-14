@@ -52,7 +52,7 @@ class IndexController extends Controller
         foreach ($currencyRates as $currency) {
 
             $quoteCurrency = $currency->quote_currency;
-            $exchangeRate = $currency->exchange_rate;
+            $exchangeRate = (float)$currency->exchange_rate;
             $date = $currency->created_at->format('d.m.Y');
         
             // Check if the quote_currency entry already exists in $newRates
