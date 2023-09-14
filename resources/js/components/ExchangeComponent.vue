@@ -13,7 +13,7 @@
 
         <!-- Pagination controls -->
         <span class="pagination-button" @click="previousPage" :disabled="currentPage === 1">&lt;</span>
-        <span class="current-page">{{ currentPage }}</span>
+        <span class="pagination-button" @click="setPage(value)" v-for="(value) in totalPages" :value="value">{{ value }}</span>
         <span class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">&gt;</span>
 
         <table class="exchange-rate-table">
@@ -22,19 +22,21 @@
             <th>EUR to {{ selectedCurrency.quote_currency }}</th>
           </tr>
           <tr v-for="(rate) in paginatedRates">
-            <td>{{ rate[0] }} </td>  
-            <td>{{ rate[1] }} </td>
+            <!-- Date -->
+            <td>{{ rate[0] }} </td>
+            <!-- Exchange Rate-->
+            <td>{{ rate[1] }} </td> 
           </tr>
         </table> 
         <!-- Pagination controls -->
         <span class="pagination-button" @click="previousPage" :disabled="currentPage === 1">&lt;</span>
-        <span class="current-page">{{ currentPage }}</span>
+        <span class="pagination-button" @click="setPage(value)" v-for="(value) in totalPages" :value="value">{{ value }}</span>
         <span class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">&gt;</span>
 
         <p class="min-max-avg-labels"><span class="widget-label">Minimum: {{ selectedCurrency.lowest_rate }} {{ selectedCurrency.quote_currency }},</span>
           <span class="widget-label">Maximum: {{ selectedCurrency.highest_rate }} {{ selectedCurrency.quote_currency }}</span>
         </p>
-        <span class="widget-label">Average: {{ selectedCurrency.average_rate }} {{ selectedCurrency.quote_currency }}</span>
+        <span class="widget-label">Average: {{ selectedCurrency.average_rate.toPrecision(5) }} {{ selectedCurrency.quote_currency }}</span>
       </div>
     </div>
   </div>
@@ -47,7 +49,7 @@
       return {
         selectedCurrency: null,
         currentPage: 1,
-        itemsPerPage: 1, // Change this to the desired number of items per page
+        itemsPerPage: 3, // Change this to the desired number of items per page
         sortByAscending: true
       };
     },
@@ -81,6 +83,9 @@
         if (this.currentPage < this.totalPages) {
           this.currentPage++;
         }
+      },
+      setPage(page) {
+        this.currentPage = page;
       },
       sortByDate() {
         this.sortByAscending = !this.sortByAscending;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -9,44 +11,55 @@ use App\Models\Rate;
 class IndexController extends Controller
 {
 
-    public $currencies = [
-        'USD', 
-        'GBP', 
-        'AUD'
-    ];
-    
     /**
-     * index
+     * @var array
      * 
-     * Return index view
+     * Currencies used on the frontend of the app
+     * Populate this list if you'd like to add any other currency.
+     */
+    protected $currencies = [
+        'USD',
+        'GBP',
+        'AUD',
+    ];
+
+     /**
+     * Return the index view with currency rates.
      *
-     * @return void
+     * @return \Illuminate\View\View
      */
     public function index() {
 
-        $new_rates = $this->getCurrencyRates();
-        return view('index')->with('new_rates', $new_rates);
+        $newRates = $this->getCurrencyRates();
+        return view('index')->with('newRates', $newRates);
     }
+    
+    /**
+     * getCurrencyRates
+     * 
+     * Fetch currencies and their rates from DB and sort the data
+     *
+     * @return array
+     */
+    protected function getCurrencyRates(): array {
 
-    public function getCurrencyRates() {
-
-        $currency_rates = Rate::whereIn('quote_currency', $this->currencies)
+        $currencyRates = Rate::whereIn('quote_currency', $this->currencies)
             ->orderBy('created_at', 'asc')
             ->get();
 
-        $new_rates = [];
+        $newRates = [];
 
-        foreach ($currency_rates as $currency) {
+        foreach ($currencyRates as $currency) {
 
             $quoteCurrency = $currency->quote_currency;
             $exchangeRate = $currency->exchange_rate;
             $date = $currency->created_at->format('d.m.Y');
         
-            // Check if the quote_currency entry already exists in $new_rates
-            if (!isset($new_rates[$quoteCurrency])) {
+            // Check if the quote_currency entry already exists in $newRates
+            if (!isset($newRates[$quoteCurrency])) {
                 // If not, initialize it with the first exchange rate found
-                $new_rates[$quoteCurrency] = [
-                    'exchange_rates' => [$date => $exchangeRate],
+                $newRates[$quoteCurrency] = [
+                    'exchange_rates' => [$date => number_format($exchangeRate, 4)],
                     'last_updated' => $date,
                     'lowest_rate' => $exchangeRate,
                     'highest_rate' => $exchangeRate,
@@ -56,29 +69,24 @@ class IndexController extends Controller
                 ];
             } else {
                 // If it already exists, update the exchange rate and last_updated date
-                $new_rates[$quoteCurrency]['exchange_rates'][$date] = $exchangeRate;
-                $new_rates[$quoteCurrency]['last_updated'] = $date;
-        
-                // Update the lowest rate if the current rate is lower
-                if ($exchangeRate < $new_rates[$quoteCurrency]['lowest_rate']) {
-                    $new_rates[$quoteCurrency]['lowest_rate'] = $exchangeRate;
-                }
-
-                // Update the highest rate if the current rate is higher
-                if ($exchangeRate > $new_rates[$quoteCurrency]['highest_rate']) {
-                    $new_rates[$quoteCurrency]['highest_rate'] = $exchangeRate;
-                }
+                $newRates[$quoteCurrency]['exchange_rates'][$date] = $exchangeRate;
+                $newRates[$quoteCurrency]['last_updated'] = $date;
+ 
+                // Find the lowest rate
+                $newRates[$quoteCurrency]['lowest_rate'] = min($exchangeRate, $newRates[$quoteCurrency]['lowest_rate']);
+                // Find the highest rate
+                $newRates[$quoteCurrency]['highest_rate'] = max($exchangeRate, $newRates[$quoteCurrency]['highest_rate']);
 
                 // Update the average rate and rate count
-                $new_rates[$quoteCurrency]['average_rate'] =
-                    ($new_rates[$quoteCurrency]['average_rate'] * $new_rates[$quoteCurrency]['rate_count'] + $exchangeRate) /
-                    ($new_rates[$quoteCurrency]['rate_count'] + 1);
+                $newRates[$quoteCurrency]['average_rate'] =
+                    ($newRates[$quoteCurrency]['average_rate'] * $newRates[$quoteCurrency]['rate_count'] + $exchangeRate) /
+                    ($newRates[$quoteCurrency]['rate_count'] + 1);
 
-                $new_rates[$quoteCurrency]['rate_count']++;
+                $newRates[$quoteCurrency]['rate_count']++;
             }
         }
 
-        return $new_rates;
+        return $newRates;
 
     }
 }

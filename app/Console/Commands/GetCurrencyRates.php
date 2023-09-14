@@ -41,7 +41,7 @@ class GetCurrencyRates extends Command
      *
      * @var array
      */
-    protected $currencies_to_use = [
+    protected $currenciesToUse = [
         'USD',
         'GBP',
         'AUD'
@@ -103,7 +103,7 @@ class GetCurrencyRates extends Command
             return;
         }
     
-        foreach ($this->currencies_to_use as $currency) {
+        foreach ($this->currenciesToUse as $currency) {
             if (property_exists($data->rates, $currency)) {
                 try {
                     Rate::create([

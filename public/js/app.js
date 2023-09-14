@@ -5081,7 +5081,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       selectedCurrency: null,
       currentPage: 1,
-      itemsPerPage: 1,
+      itemsPerPage: 3,
       // Change this to the desired number of items per page
       sortByAscending: true
     };
@@ -5113,6 +5113,9 @@ __webpack_require__.r(__webpack_exports__);
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
       }
+    },
+    setPage: function setPage(page) {
+      this.currentPage = page;
     },
     sortByDate: function sortByDate() {
       this.sortByAscending = !this.sortByAscending;
@@ -5190,9 +5193,19 @@ var render = function render() {
     on: {
       click: _vm.previousPage
     }
-  }, [_vm._v("<")]), _vm._v(" "), _c("span", {
-    staticClass: "current-page"
-  }, [_vm._v(_vm._s(_vm.currentPage))]), _vm._v(" "), _c("span", {
+  }, [_vm._v("<")]), _vm._v(" "), _vm._l(_vm.totalPages, function (value) {
+    return _c("span", {
+      staticClass: "pagination-button",
+      attrs: {
+        value: value
+      },
+      on: {
+        click: function click($event) {
+          return _vm.setPage(value);
+        }
+      }
+    }, [_vm._v(_vm._s(value))]);
+  }), _vm._v(" "), _c("span", {
     staticClass: "pagination-button",
     attrs: {
       disabled: _vm.currentPage === _vm.totalPages
@@ -5217,9 +5230,19 @@ var render = function render() {
     on: {
       click: _vm.previousPage
     }
-  }, [_vm._v("<")]), _vm._v(" "), _c("span", {
-    staticClass: "current-page"
-  }, [_vm._v(_vm._s(_vm.currentPage))]), _vm._v(" "), _c("span", {
+  }, [_vm._v("<")]), _vm._v(" "), _vm._l(_vm.totalPages, function (value) {
+    return _c("span", {
+      staticClass: "pagination-button",
+      attrs: {
+        value: value
+      },
+      on: {
+        click: function click($event) {
+          return _vm.setPage(value);
+        }
+      }
+    }, [_vm._v(_vm._s(value))]);
+  }), _vm._v(" "), _c("span", {
     staticClass: "pagination-button",
     attrs: {
       disabled: _vm.currentPage === _vm.totalPages
@@ -5235,7 +5258,7 @@ var render = function render() {
     staticClass: "widget-label"
   }, [_vm._v("Maximum: " + _vm._s(_vm.selectedCurrency.highest_rate) + " " + _vm._s(_vm.selectedCurrency.quote_currency))])]), _vm._v(" "), _c("span", {
     staticClass: "widget-label"
-  }, [_vm._v("Average: " + _vm._s(_vm.selectedCurrency.average_rate) + " " + _vm._s(_vm.selectedCurrency.quote_currency))])]) : _vm._e()])]);
+  }, [_vm._v("Average: " + _vm._s(_vm.selectedCurrency.average_rate.toPrecision(5)) + " " + _vm._s(_vm.selectedCurrency.quote_currency))])], 2) : _vm._e()])]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
