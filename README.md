@@ -1,4 +1,4 @@
-# trodo-test-task
+# Laravel & vue.js - Exchange rate fetch from API (anyapi.io)
 
  ### To set up the project:
 
