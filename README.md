@@ -2,7 +2,7 @@
 
  ### To set up the project:
 
-PHP 7.4
+PHP 8.2
 Composer 2.6.2
 
 1. Git clone the repository
