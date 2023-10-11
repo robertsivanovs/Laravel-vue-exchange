@@ -3,9 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Models\Rate;
 
 class IndexController extends Controller
@@ -17,7 +14,7 @@ class IndexController extends Controller
      * Currencies used on the frontend of the app
      * Populate this list if you'd like to add any other currency.
      */
-    protected $currencies = [
+    protected array $currencies = [
         'USD',
         'GBP',
         'AUD',

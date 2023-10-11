@@ -41,7 +41,7 @@ class GetCurrencyRates extends Command
      *
      * @var array
      */
-    protected $currenciesToUse = [
+    protected array $currenciesToUse = [
         'USD',
         'GBP',
         'AUD'
